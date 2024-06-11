@@ -1,12 +1,14 @@
 describe('POST /users', () => {
 
-  it('Register a new user', () => {
+  beforeEach(function() {
+    cy.fixture('users').then(function (users) {
+      this.users = users
+    })
+  })
 
-    const user = {
-      name: "Guilherme Cordeiro",
-      email: "guilherme@gmail.com",
-      password: "A123456"
-    }
+  it('Register a new user', function() {
+
+    const user = this.users.create
 
     cy.task('deleteUser', user.email)
 
@@ -15,13 +17,9 @@ describe('POST /users', () => {
     })
   })
 
-  it('duplicate mail', () => {
+  it('duplicate mail', function() {
 
-    const user = {
-      name: "James Gun",
-      email: "james.gun@gmail.com",
-      password: "A123456"
-    }
+    const user = this.users.dup_mail
 
     cy.task('deleteUser', user.email)
 
@@ -36,15 +34,11 @@ describe('POST /users', () => {
     })
   })
 
-  context('required fields', ()=> {
+  context('required fields', function() {
     let user;
 
-    beforeEach(() => {
-      user = {
-        name: 'Margot Robbie',
-        mail: 'margor@gmail.com',
-        password: 'A123456'
-      }
+    beforeEach(function() {
+      user = this.users.required
     })
 
     it('name is required', () =>{
@@ -57,7 +51,7 @@ describe('POST /users', () => {
       })
     })
 
-    it('email is required', () =>{
+    it('email is required', function() {
       delete user.mail
 
       cy.postUser(user).then(res =>{
@@ -67,7 +61,7 @@ describe('POST /users', () => {
       })
     })
 
-    it('password is required', () =>{
+    it('password is required', function() {
       delete user.password
 
       cy.postUser(user).then(res =>{
